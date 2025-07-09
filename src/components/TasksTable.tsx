@@ -3,14 +3,19 @@ import cx from 'clsx';
 import { Badge, ScrollArea, Table } from '@mantine/core';
 import classes from '@style/TasksTable.module.css';
 import { badgeColor, priorityColors } from '@/constants/badgeColors';
+import EditTaskDrawer from './EditTaskDrawer';
+import { useDisclosure } from '@mantine/hooks';
 
 
 
 export function TasksTable({data}) {
   const [ scrolled, setScrolled ] = useState(false);
+  const [ opened, { open, close } ] = useDisclosure(false);
+  const [task,setTask] = useState({})
   
   const rows = data.map((row) => (
-    <Table.Tr key={row.taskName}>
+
+    <Table.Tr key={row.taskName} onClick={() => { open(); setTask(row)}}>
       <Table.Td>{row.taskName}</Table.Td>
       <Table.Td>{row.description}</Table.Td>
 
@@ -20,10 +25,14 @@ export function TasksTable({data}) {
       <Table.Td><Badge variant="light" color={priorityColors[row.priority.toLowerCase()]}>{row.priority}</Badge></Table.Td>
       <Table.Td>{row.assignee}</Table.Td>
       <Table.Td>{row.creationDate}</Table.Td>
-    </Table.Tr>
+      </Table.Tr>
+
   ));
 
   return (
+    <>
+      <EditTaskDrawer opened={opened} close={close} selectedTask={task} />
+      
     <ScrollArea h={600} onScrollPositionChange={({ y }) => setScrolled(y !== 0)}>
       <Table miw={700} highlightOnHover>
         <Table.Thead className={cx(classes.header, { [classes.scrolled]: scrolled })}>
@@ -40,6 +49,7 @@ export function TasksTable({data}) {
         </Table.Thead>
         <Table.Tbody>{rows}</Table.Tbody>
       </Table>
-    </ScrollArea>
+      </ScrollArea>
+      </>
   );
 }
