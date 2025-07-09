@@ -1,0 +1,16 @@
+#root {
+  /* max-width: 1280px; */
+  /* text-align: center; */
+
+  width: 100dvw;
+  background-color: #eef4fe;
+}
+
+
+.layout {
+  display: flex;
+  height: 100%;
+}
+
+
+

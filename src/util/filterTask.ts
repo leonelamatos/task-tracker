@@ -1,0 +1,1 @@
+export const filterOutCompletedTask = (data,callback) => data.filter(callback)
