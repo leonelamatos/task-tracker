@@ -1,9 +1,6 @@
 import { Accordion } from "@mantine/core";
-import React from "react";
 import { TasksTable } from "./TasksTable";
-import { useFilteredArray } from "@/hooks/useGetActiveTask";
 import { accordionData } from "@/constants/accordionData";
-import { filterOutCompletedTask } from "@/util/filterTask";
 
 
 const filterActivetasks = (data) => data.filter(task=> task?.status?.toLowerCase() !== 'completed')

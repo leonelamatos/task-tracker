@@ -1,37 +1,18 @@
-import { useState } from 'react';
 import {
   IconCalendarStats,
   IconDeviceDesktopAnalytics,
   IconGauge,
   IconHome2,
-  IconLogout,
   IconPlus,
-  IconSwitchHorizontal,
   IconUser,
 } from '@tabler/icons-react';
-import { Accordion, ActionIcon, AppShell, Avatar, Box, Burger, Card, Center, Container, Divider, Flex, Grid, Group, Menu, SimpleGrid, Stack, Text, Title} from '@mantine/core';
-// import { MantineLogo } from '@mantinex/mantine-logo';
-import classes from '@style/Navbar.module.css';
-import NavbarLink from '@components/NavLink';
+import {  ActionIcon, AppShell, Avatar,  Burger, Center,  Flex,  Group, Title} from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import ActionsGrid from './components/Card';
 import AccordionItem from './components/Accordion';
-
-
-
-
-const mockdata = [
-  { icon: IconHome2, label: 'Home' },
-  { icon: IconGauge, label: 'Dashboard' },
-  { icon: IconDeviceDesktopAnalytics, label: 'Analytics' },
-  { icon: IconCalendarStats, label: 'Releases' },
-  { icon: IconUser, label: 'Account' },
-
-];
+import AddNewTask from './components/AddNewTask';
 
 export default function App() {
   const [opened, { toggle }] = useDisclosure();
-
 
   return (
   
@@ -70,6 +51,7 @@ export default function App() {
      
       <AppShell.Main>
         <Title>Task Management</Title>
+        <AddNewTask/>
         <AccordionItem/>
       </AppShell.Main>
     </AppShell>
