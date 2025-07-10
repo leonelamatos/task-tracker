@@ -10,7 +10,4 @@ export const getAllTask = async (req, res) => {
     if(error) return rej
     const tasks = data.documents
     return res.json(tasks)
-
-
-    
 }
