@@ -1,0 +1,1 @@
+export function handleAsync(callback){return callback.then(data=>[undefined, data]).catch(error=>[error])}
