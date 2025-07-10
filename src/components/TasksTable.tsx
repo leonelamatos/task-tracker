@@ -8,13 +8,15 @@ import { useDisclosure } from '@mantine/hooks';
 import dayjs from 'dayjs';
 import { DatePickerInput } from '@mantine/dates';
 import { IconCalendar } from '@tabler/icons-react';
+import type { TableProps, TaskType } from '@/constants/types';
 
 
 
-export function TasksTable({ data, variant }) {
+
+export function TasksTable({ data, variant }: TableProps) {
   const [ scrolled, setScrolled ] = useState(false);
   const [ opened, { open, close } ] = useDisclosure(false);
-  const [ task, setTask ] = useState({})
+  const [ task, setTask ] = useState <TaskType>()
 
   const selectedTask = data[ 0 ]
 
@@ -27,7 +29,7 @@ export function TasksTable({ data, variant }) {
       <Table.Td><Badge variant="light" color={badgeColor[ row.status ]}>{row.status}</Badge></Table.Td>
       <Table.Td>{row.type}</Table.Td>
       <Table.Td>{row.dueDate}</Table.Td>
-      <Table.Td><Badge variant="light" color={priorityColors[ row.priority.toLowerCase() ]}>{row.priority}</Badge></Table.Td>
+      <Table.Td><Badge variant="light" color={priorityColors[ row.priority ]}>{row.priority}</Badge></Table.Td>
       <Table.Td>{row.assignee}</Table.Td>
       <Table.Td>{row.creationDate}</Table.Td>
     </Table.Tr>
@@ -35,26 +37,18 @@ export function TasksTable({ data, variant }) {
   ));
 
 
-  console.log(data)
   return (
     <>
-      <EditTaskDrawer opened={opened} close={close} selectedTask={task} closeOnClick={false} />
 
-      <ScrollArea h={600} onScrollPositionChange={({ y }) => setScrolled(y !== 0)}>
+      <ScrollArea h='100%' onScrollPositionChange={({ y }) => setScrolled(y !== 0)}>
         {variant ?
 
           <>
-
-            <Table variant="vertical" layout="fixed" withRowBorders={false} withColumnBorders={false} verticalSpacing={'lg'} mb={50} cu>
-
-
+            <Table variant="vertical" layout="fixed" withRowBorders={false} withColumnBorders={false} verticalSpacing={'lg'} mb={50}>
               <Table.Tbody>
                 <Table.Tr >
                   <Table.Th bg='transparent' w='10rem'>Status</Table.Th>
                   <Table.Td>
-                    {/* <TextInput placeholder="Task Name" size="md" value={selectedTask.status} />
-                     */}
-
                     <Select
                       variant='filled'
                       styles={{ label: { marginBottom: 10 } }}
@@ -114,7 +108,6 @@ export function TasksTable({ data, variant }) {
               </Table.Tbody>
             </Table>
 
-
             <Divider />
             <Textarea
               pb={40}
@@ -139,27 +132,29 @@ export function TasksTable({ data, variant }) {
               size="md"
               my={40}
             />
-
-
           </>
 
           :
+          <>
+            <EditTaskDrawer opened={opened} close={close} selectedTask={task!} closeOnClick={false} />
+            <Table miw={700} highlightOnHover>
+              <Table.Thead className={cx(classes.header, { [ classes.scrolled ]: scrolled })}>
+                <Table.Tr >
+                  <Table.Th>Task Name</Table.Th>
+                  <Table.Th>Description</Table.Th>
+                  <Table.Th>Status</Table.Th>
+                  <Table.Th>Type</Table.Th>
+                  <Table.Th>Due Date</Table.Th>
+                  <Table.Th>Priority</Table.Th>
+                  <Table.Th>Assignee</Table.Th>
+                  <Table.Th>Creation Date</Table.Th>
+                </Table.Tr>
+              </Table.Thead>
+              <Table.Tbody>{rows}</Table.Tbody>
+            </Table>
 
-          <Table miw={700} highlightOnHover>
-            <Table.Thead className={cx(classes.header, { [ classes.scrolled ]: scrolled })}>
-              <Table.Tr >
-                <Table.Th>Task Name</Table.Th>
-                <Table.Th>Description</Table.Th>
-                <Table.Th>Status</Table.Th>
-                <Table.Th>Type</Table.Th>
-                <Table.Th>Due Date</Table.Th>
-                <Table.Th>Priority</Table.Th>
-                <Table.Th>Assignee</Table.Th>
-                <Table.Th>Creation Date</Table.Th>
-              </Table.Tr>
-            </Table.Thead>
-            <Table.Tbody>{rows}</Table.Tbody>
-          </Table>}
+          </>
+        }
       </ScrollArea>
     </>
   );
