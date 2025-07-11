@@ -9,6 +9,7 @@ import dayjs from 'dayjs';
 import { DatePickerInput } from '@mantine/dates';
 import { IconCalendar } from '@tabler/icons-react';
 import type { TableProps, TaskType } from '@/constants/types';
+import { useAppStore } from '@/states/appState';
 
 
 
@@ -16,13 +17,17 @@ import type { TableProps, TaskType } from '@/constants/types';
 export function TasksTable({ data, variant }: TableProps) {
   const [ scrolled, setScrolled ] = useState(false);
   const [ opened, { open, close } ] = useDisclosure(false);
-  const [ task, setTask ] = useState <TaskType>()
+  // const [ task, setTask ] = useState<TaskType>()
 
-  const selectedTask = data[ 0 ]
+  const openDrawerFn = useAppStore(state => state.openDrawerFn)
+  const setSelectedTaskFn = useAppStore(state => state.setSelectedTaskFn)
+
+
+  const selectedTask = data[0]
 
   const rows = data.map((row) => (
 
-    <Table.Tr key={row.taskName} onClick={() => { open(); setTask(row) }} styles={{ tr: { cursor: 'pointer' } }}>
+    <Table.Tr key={row.taskName} onClick={() => { openDrawerFn(); setSelectedTaskFn(row) }} styles={{ tr: { cursor: 'pointer' } }}>
       <Table.Td>{row.taskName}</Table.Td>
       <Table.Td>{row.description}</Table.Td>
 
@@ -136,7 +141,6 @@ export function TasksTable({ data, variant }: TableProps) {
 
           :
           <>
-            <EditTaskDrawer opened={opened} close={close} selectedTask={task!} closeOnClick={false} />
             <Table miw={700} highlightOnHover>
               <Table.Thead className={cx(classes.header, { [ classes.scrolled ]: scrolled })}>
                 <Table.Tr >

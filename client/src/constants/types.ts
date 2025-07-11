@@ -15,8 +15,13 @@ export type TableProps = {
 }
 
 export type EditTaskType = {
-    opened: boolean
-    close: () => void
-    selectedTask: TaskType
+    // opened: boolean
+    // close: () => void
+    // selectedTask: TaskType
     closeOnClick:boolean
+}
+
+export type DocumentsFetchRespond = {
+  total: number
+  documents: TaskType[]
 }

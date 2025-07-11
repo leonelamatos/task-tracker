@@ -1,9 +1,11 @@
+import { useAppStore } from "@/states/appState";
 import { Button, Container, Divider, Flex, Group, Select, Stack, Textarea, TextInput, Title } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
 import { IconCalendar } from "@tabler/icons-react";
 import dayjs from "dayjs";
 
 export default function NewTaskForm() {
+    const closeCreateModal = useAppStore(state => state.closeCreateModalFn)
     return <form >
         <Container fluid p={20}>
             <Flex gap={20}>
@@ -21,7 +23,7 @@ export default function NewTaskForm() {
                         />
                         <Divider />
                         <Group justify="flex-end" pt={10}>
-                            <Button variant="subtle" color="gray">Cancel</Button>
+                            <Button variant="subtle" color="gray" onClick={closeCreateModal}>Cancel</Button>
                             <Button>Create Task</Button>
                         </Group>
                     </Stack>
