@@ -1,9 +1,11 @@
 import useAsync from "@/hooks/useAsync";
 import { useAppStore } from "@/states/appState";
+import { handleAsync } from "@/util/handleAsync";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, Container, Divider, Flex, Group, Select, Stack, Textarea, TextInput, Title } from "@mantine/core";
+import { Button, CheckIcon, Container, Divider, Flex, Group, Select, Stack, Textarea, TextInput, Title } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
-import { IconCalendar } from "@tabler/icons-react";
+import { notifications } from "@mantine/notifications";
+import { IconCalendar, IconX } from "@tabler/icons-react";
 import axios from "axios";
 import dayjs from "dayjs";
 import { useForm, Controller } from "react-hook-form";
@@ -34,11 +36,46 @@ export default function NewTaskForm() {
     })
 
 
+
+
     const handleCreateTask = async (formData: TaskSchema) => {
         setIsLoading(true)
-        const { data } = await axios.post('http://localhost:3000/tasks', formData, { headers: { "Content-Type": 'application/json' } })
+        const [ error, data ] = await handleAsync(axios.post('http://localhost:3000/tasks', formData, { headers: { "Content-Type": 'application/json' } }))
 
+        if (error) {
+            setIsLoading(false)
+            notifications.show({
+                id: 'error',
+                position: 'top-center',
+                color: "red",
+                style: { background: '#f1d9d9' },
+                withCloseButton: true,
+                onClose: () => console.log('unmounted'),
+                onOpen: () => console.log('mounted'),
+                autoClose: 5000,
+                icon: <IconX size={18} />,
+                title: data.status,
+                message: 'There was an issue saving task.',
+            });
+            return
+
+        }
         setIsLoading(false)
+
+        notifications.show({
+            id: 'success',
+            position: 'top-center',
+            color: "green",
+            style: { background: '#e8f5e9' },
+            withCloseButton: true,
+            onClose: () => console.log('unmounted'),
+            onOpen: () => console.log('mounted'),
+            autoClose: 5000,
+            icon: <CheckIcon size={18} />,
+            title: data.status,
+            message: 'Task has saved successfully.',
+        });
+
         saveTasks(data.data)
         closeCreateModal()
     }
