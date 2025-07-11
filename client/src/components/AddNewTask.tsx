@@ -12,7 +12,7 @@ export default function AddNewTask() {
 
   return (
     <>
-      <Modal opened={isModalOpened} onClose={closeCreateModal} centered size='55rem' withCloseButton={false} styles={{ body: { padding: 0 } }}>
+      <Modal opened={isModalOpened} onClose={closeCreateModal} centered size='55rem' withCloseButton={false} closeOnClickOutside={false} styles={{ body: { padding: 0 } }}>
         <NewTaskForm />
       </Modal>
 

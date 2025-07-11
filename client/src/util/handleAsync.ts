@@ -1,0 +1,1 @@
+export function handleAsync(callback: Promise<any>){return callback.then((data)=>[undefined, data]).catch((error:unknown)=>[error])}

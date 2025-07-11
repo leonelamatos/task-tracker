@@ -24,7 +24,7 @@ export function TasksTable({ data, variant }: TableProps) {
 
   const rows = data.map((row) => (
 
-    <Table.Tr key={row.taskName} onClick={() => { openDrawerFn(); setSelectedTaskFn(row) }} styles={{ tr: { cursor: 'pointer' } }}>
+    <Table.Tr key={row.$id} onClick={() => { openDrawerFn(); setSelectedTaskFn(row) }} styles={{ tr: { cursor: 'pointer' } }}>
       <Table.Td>{row.taskName}</Table.Td>
       <Table.Td>{row.description}</Table.Td>
 

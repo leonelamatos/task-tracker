@@ -15,7 +15,7 @@ const schema = z.object({
     description: z.string().optional(),
     status: z.enum([ 'New Task', 'Schedule', 'In Progress', 'Completed' ]).default('New Task'),
     type: z.enum([ 'BugFix', 'Backend', 'New Feature', 'UI/UX' ]).default('New Feature'),
-    scheduledDate: z.string().default(dayjs().format('YYYY-MM-DD')),
+    creationDate: z.string().default(dayjs().format('YYYY-MM-DD')),
     dueDate: z.string().default(dayjs().format('YYYY-MM-DD')),
     priority: z.enum([ 'Critical', 'High', 'Medium', 'Low' ]).default('Low')
 
@@ -25,18 +25,22 @@ type TaskSchema = z.infer<typeof schema>
 
 export default function NewTaskForm() {
     const closeCreateModal = useAppStore(state => state.closeCreateModalFn)
+    const setIsLoading = useAppStore(state => state.setIsLoading)
+    const saveTasks = useAppStore(state => state.saveTasks)
+
     const { handleSubmit, formState: { errors }, control } = useForm({
         mode: 'onBlur',
         resolver: zodResolver(schema),
-        // defaultValues: defaultTaskValue
     })
 
 
     const handleCreateTask = async (formData: TaskSchema) => {
-        const { error, value } = useAsync(() => axios.post('http://localhost:3000/tasks', formData, { headers: { "Content-Type": 'application/json' } }))
+        setIsLoading(true)
+        const { data } = await axios.post('http://localhost:3000/tasks', formData, { headers: { "Content-Type": 'application/json' } })
 
-        console.log(error)
-        console.log(value)
+        setIsLoading(false)
+        saveTasks(data.data)
+        closeCreateModal()
     }
 
     return <form onSubmit={handleSubmit(handleCreateTask)}>
@@ -78,7 +82,7 @@ export default function NewTaskForm() {
                             // {...register('type')}
                             onChange={onChange}
                         />)} />
-                    <Controller control={control} name='type' render={({ field: { onChange } }) => (
+                    <Controller control={control} name='status' render={({ field: { onChange } }) => (
                         <Select
                             styles={{ label: { marginBottom: 10 } }}
                             label="Status"
@@ -88,7 +92,7 @@ export default function NewTaskForm() {
                             onChange={onChange}
                         // clearable
                         />)} />
-                    <Controller control={control} name='type' render={({ field: { onChange } }) => (
+                    <Controller control={control} name='creationDate' render={({ field: { onChange } }) => (
                         <DatePickerInput
                             leftSection={<IconCalendar size={18} stroke={1.5} />}
                             numberOfColumns={2}
@@ -98,13 +102,13 @@ export default function NewTaskForm() {
                             ]}
                             defaultDate={dayjs().format('YYYY-MM-DD')}
                             placeholder="Today"
-                            label="Scheduled Day"
+                            label="Creation Day"
                             radius="md"
                             size="md"
                             onChange={onChange}
                         />)} />
 
-                    <Controller control={control} name='type' render={({ field: { onChange } }) => (
+                    <Controller control={control} name='dueDate' render={({ field: { onChange } }) => (
                         <DatePickerInput
                             leftSection={<IconCalendar size={18} stroke={1.5} />}
                             styles={{ label: { marginBottom: 10 } }}
@@ -119,7 +123,7 @@ export default function NewTaskForm() {
                             onChange={onChange}
                         />)} />
 
-                    <Controller control={control} name='type' render={({ field: { onChange } }) => (
+                    <Controller control={control} name='priority' render={({ field: { onChange } }) => (
                         <Select
                             styles={{ label: { marginBottom: 10 } }}
                             label="Priority"

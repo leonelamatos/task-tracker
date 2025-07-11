@@ -8,6 +8,7 @@ import TaskCount from "./TaskCount";
 import NoTaskFound from "./NoTaskFound";
 import { useAppStore } from "@/states/appState";
 import EditTaskDrawer from "./EditTaskDrawer";
+import { useEffect } from "react";
 
 
 const filterActivetasks = (data: TaskType[]) => data?.filter(task => task?.status?.toLowerCase() !== 'completed')
@@ -17,11 +18,19 @@ const filterCompletedTasks = (data: TaskType[]) => data?.filter(task => task?.st
 
 export default function AccordionItem() {
 
-  // const isModalOpened = useAppStore(state => state.isModalOpened)
+  const isLoading = useAppStore(state => state.isLoading)
+  const fetchTasks = useAppStore(state => state.fetchTasks)
+  const taskArray = useAppStore(state => state.taskArray)
 
-  const { isLoading, error, value } = useFetch('http://localhost:3000/tasks')
-  const activeTasks = filterActivetasks(value)
-  const completedTasks = filterCompletedTasks(value)
+  useEffect(() => {
+    fetchTasks('http://localhost:3000/tasks')
+
+  }, [])
+
+  console.log(taskArray)
+
+  const activeTasks = filterActivetasks(taskArray)
+  const completedTasks = filterCompletedTasks(taskArray)
 
   return (
     <>
@@ -36,7 +45,7 @@ export default function AccordionItem() {
           </Accordion.Control>
           <Accordion.Panel>
             {
-              !value?.length ? <NoTaskFound /> : <TasksTable data={activeTasks} />
+              !taskArray?.length ? <NoTaskFound /> : <TasksTable data={activeTasks} />
             }
 
           </Accordion.Panel>
@@ -48,7 +57,7 @@ export default function AccordionItem() {
           </Accordion.Control>
           <Accordion.Panel>
             {
-              !value?.length ? <NoTaskFound isCompletedTasks /> : <TasksTable data={completedTasks} />
+              !taskArray?.length ? <NoTaskFound isCompletedTasks /> : <TasksTable data={completedTasks} />
             }
 
           </Accordion.Panel>

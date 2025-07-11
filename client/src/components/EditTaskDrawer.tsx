@@ -23,7 +23,7 @@ export default function EditTaskDrawer({ closeOnClick }: EditTaskType) {
 
           <Flex justify='space-between' >
             <Group>
-              <Button variant='light' onClick={close}>Cancel</Button>
+              <Button variant='light' onClick={closeDrawerFn}>Cancel</Button>
               <Button>Save</Button>
             </Group>
             <ActionIcon variant="filled" color="red" size="xl" radius="xl" aria-label="Settings">
