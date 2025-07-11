@@ -16,14 +16,11 @@ import { useAppStore } from '@/states/appState';
 
 export function TasksTable({ data, variant }: TableProps) {
   const [ scrolled, setScrolled ] = useState(false);
-  const [ opened, { open, close } ] = useDisclosure(false);
-  // const [ task, setTask ] = useState<TaskType>()
-
   const openDrawerFn = useAppStore(state => state.openDrawerFn)
   const setSelectedTaskFn = useAppStore(state => state.setSelectedTaskFn)
 
 
-  const selectedTask = data[0]
+  const selectedTask = data[ 0 ]
 
   const rows = data.map((row) => (
 

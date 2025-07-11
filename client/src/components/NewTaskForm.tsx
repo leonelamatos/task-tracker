@@ -1,12 +1,45 @@
+import useAsync from "@/hooks/useAsync";
 import { useAppStore } from "@/states/appState";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Container, Divider, Flex, Group, Select, Stack, Textarea, TextInput, Title } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
 import { IconCalendar } from "@tabler/icons-react";
+import axios from "axios";
 import dayjs from "dayjs";
+import { useForm, Controller } from "react-hook-form";
+import z from "zod";
+
+
+const schema = z.object({
+    taskName: z.string({ error: 'test' }).min(1),
+    description: z.string().optional(),
+    status: z.enum([ 'New Task', 'Schedule', 'In Progress', 'Completed' ]).default('New Task'),
+    type: z.enum([ 'BugFix', 'Backend', 'New Feature', 'UI/UX' ]).default('New Feature'),
+    scheduledDate: z.string().default(dayjs().format('YYYY-MM-DD')),
+    dueDate: z.string().default(dayjs().format('YYYY-MM-DD')),
+    priority: z.enum([ 'Critical', 'High', 'Medium', 'Low' ]).default('Low')
+
+})
+
+type TaskSchema = z.infer<typeof schema>
 
 export default function NewTaskForm() {
     const closeCreateModal = useAppStore(state => state.closeCreateModalFn)
-    return <form >
+    const { handleSubmit, formState: { errors }, control } = useForm({
+        mode: 'onBlur',
+        resolver: zodResolver(schema),
+        // defaultValues: defaultTaskValue
+    })
+
+
+    const handleCreateTask = async (formData: TaskSchema) => {
+        const { error, value } = useAsync(() => axios.post('http://localhost:3000/tasks', formData, { headers: { "Content-Type": 'application/json' } }))
+
+        console.log(error)
+        console.log(value)
+    }
+
+    return <form onSubmit={handleSubmit(handleCreateTask)}>
         <Container fluid p={20}>
             <Flex gap={20}>
                 {/* <Grid.Col span={{ base: 8, md: 8 }} >  */}
@@ -14,71 +47,87 @@ export default function NewTaskForm() {
 
                     <Stack w='100%'>
                         <Title order={3}>Create Task</Title>
-                        <TextInput placeholder="Task Name" size="md" />
-                        <Textarea
-                            h='20rem'
-                            rows={10}
-                            size="md"
-                            placeholder="Task description"
-                        />
+                        <Controller control={control} name='taskName' render={({ field: { onChange, onBlur } }) => (
+
+                            <TextInput placeholder={!errors.taskName ? "Task Name" : 'Task name is required'} size="md" styles={{ input: { borderColor: errors.taskName ? 'red' : 'gray' } }} onChange={onChange} autoFocus onBlur={onBlur} />
+                        )} />
+                        <Controller control={control} name='description' render={({ field: { onChange, onBlur } }) => (
+                            <Textarea
+                                h='20rem'
+                                rows={10}
+                                size="md"
+                                placeholder="Task description"
+                                onChange={onChange}
+                                onBlur={onBlur}
+                            />)} />
                         <Divider />
                         <Group justify="flex-end" pt={10}>
                             <Button variant="subtle" color="gray" onClick={closeCreateModal}>Cancel</Button>
-                            <Button>Create Task</Button>
+                            <Button type="submit">Create Task</Button>
                         </Group>
                     </Stack>
                 </Group>
-
                 <Stack justify="space-between">
-                    <Select
-                        styles={{ label: { marginBottom: 10 } }}
-                        label="Type"
-                        placeholder="Pick value"
-                        data={[ 'BugFix', 'Backend', 'New Feature', 'UI/UX', 'In Progress' ]}
-                        defaultValue="New Feature"
-                    />
-                    <Select
-                        styles={{ label: { marginBottom: 10 } }}
-                        label="Status"
-                        placeholder="Pick value"
-                        data={[ 'New Task', 'Schedule', 'In Progress', 'Comoleted' ]}
-                        defaultValue="New Task"
-                    // clearable
-                    />
+                    <Controller control={control} name='type' render={({ field: { onChange } }) => (
+                        <Select
+                            styles={{ label: { marginBottom: 10 } }}
+                            label="Type"
+                            placeholder="Pick value"
+                            data={[ 'BugFix', 'Backend', 'New Feature', 'UI/UX' ]}
+                            defaultValue="New Feature"
+                            // {...register('type')}
+                            onChange={onChange}
+                        />)} />
+                    <Controller control={control} name='type' render={({ field: { onChange } }) => (
+                        <Select
+                            styles={{ label: { marginBottom: 10 } }}
+                            label="Status"
+                            // placeholder="Select Status"
+                            data={[ 'New Task', 'Schedule', 'In Progress', 'Completed' ]}
+                            defaultValue="New Task"
+                            onChange={onChange}
+                        // clearable
+                        />)} />
+                    <Controller control={control} name='type' render={({ field: { onChange } }) => (
+                        <DatePickerInput
+                            leftSection={<IconCalendar size={18} stroke={1.5} />}
+                            numberOfColumns={2}
+                            styles={{ label: { marginBottom: 10 } }}
+                            presets={[
+                                { value: dayjs().format('YYYY-MM-DD'), label: 'Today' },
+                            ]}
+                            defaultDate={dayjs().format('YYYY-MM-DD')}
+                            placeholder="Today"
+                            label="Scheduled Day"
+                            radius="md"
+                            size="md"
+                            onChange={onChange}
+                        />)} />
 
-                    <DatePickerInput
-                        leftSection={<IconCalendar size={18} stroke={1.5} />}
-                        numberOfColumns={2}
-                        styles={{ label: { marginBottom: 10 } }}
-                        presets={[
-                            { value: dayjs().format('YYYY-MM-DD'), label: 'Today' },
-                        ]}
-                        defaultDate={dayjs().format('YYYY-MM-DD')}
-                        placeholder="Today"
-                        label="Pick date"
-                        radius="md"
-                        size="md"
-                    />
-                    <DatePickerInput
-                        leftSection={<IconCalendar size={18} stroke={1.5} />}
-                        styles={{ label: { marginBottom: 10 } }}
-                        presets={[
-                            { value: dayjs().format('YYYY-MM-DD'), label: 'Today' },
-                        ]}
-                        defaultValue={dayjs().format('YYYY-MM-DD')}
-                        placeholder="No due day"
-                        label="Due Date"
-                        radius="md"
-                        size="md"
-                    />
+                    <Controller control={control} name='type' render={({ field: { onChange } }) => (
+                        <DatePickerInput
+                            leftSection={<IconCalendar size={18} stroke={1.5} />}
+                            styles={{ label: { marginBottom: 10 } }}
+                            presets={[
+                                { value: dayjs().format('YYYY-MM-DD'), label: 'Today' },
+                            ]}
+                            // defaultValue={dayjs().format('YYYY-MM-DD')}
+                            placeholder="Today"
+                            label="Due Date"
+                            radius="md"
+                            size="md"
+                            onChange={onChange}
+                        />)} />
 
-                    <Select
-                        styles={{ label: { marginBottom: 10 } }}
-                        label="Priority"
-                        placeholder="None"
-                        data={[ 'Critical', 'High', 'Medium', 'Low' ]}
-                        defaultValue="React"
-                    />
+                    <Controller control={control} name='type' render={({ field: { onChange } }) => (
+                        <Select
+                            styles={{ label: { marginBottom: 10 } }}
+                            label="Priority"
+                            placeholder="None"
+                            data={[ 'Critical', 'High', 'Medium', 'Low' ]}
+                            defaultValue="Low"
+                            onChange={onChange}
+                        />)} />
                 </Stack>
 
             </Flex>

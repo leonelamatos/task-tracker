@@ -1,27 +1,30 @@
+import { useAppStore } from "@/states/appState"
 import { useCallback, useEffect, useState } from "react"
 
 export default function useAsync<T>(callback: () => Promise<T>, dependencies = []): {
-    loading: boolean
+    isLoading: boolean
     error: Error | undefined
     value: T | undefined
 } {
-    const [ loading, setLoading ] = useState<boolean>(true)
+    const isLoading = useAppStore(state => state.isLoading)
+    const setIsLoading = useAppStore(state => state.setIsLoading)
+    // const [ loading, setLoading ] = useState<boolean>(true)
     const [ error, setError ] = useState<Error | undefined>()
     const [ value, setValue ] = useState<T | undefined>()
 
     const callbackMemoized = useCallback(() => {
-        setLoading(true)
+        setIsLoading(true)
         setError(undefined)
         setValue(undefined)
         callback()
             .then(setValue)
             .catch(setError)
-            .finally(() => setLoading(false))
+            .finally(() => setIsLoading(false))
     }, dependencies)
 
     useEffect(() => {
         callbackMemoized()
     }, [ callbackMemoized ])
 
-    return { loading, error, value }
+    return { isLoading, error, value }
 }

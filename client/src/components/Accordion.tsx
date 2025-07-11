@@ -19,14 +19,14 @@ export default function AccordionItem() {
 
   // const isModalOpened = useAppStore(state => state.isModalOpened)
 
-  const { loading, error, value } = useFetch('http://localhost:3000/tasks')
+  const { isLoading, error, value } = useFetch('http://localhost:3000/tasks')
   const activeTasks = filterActivetasks(value)
   const completedTasks = filterCompletedTasks(value)
 
   return (
     <>
 
-      <LoadingOverlay visible={loading} zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />
+      <LoadingOverlay visible={isLoading} zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />
       <EditTaskDrawer closeOnClick={false} />
 
       <Accordion variant="contained" multiple defaultValue={[ 'active', 'completed' ]}>

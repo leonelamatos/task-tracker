@@ -14,9 +14,11 @@ const taskSchema = {
 }
         
 type AppStore = {
+    isLoading: boolean
     isModalOpened: boolean
     isDrawerOpened: boolean
     selectedTask: TaskType
+    setIsLoading:(arg:boolean)=>void
     setSelectedTaskFn:(task:TaskType)=>void
     openDrawerFn:()=>void,
         closeDrawerFn:()=>void,
@@ -26,9 +28,11 @@ type AppStore = {
 
 export const useAppStore = create<AppStore>()(
     persist(set => ({
+        isLoading: true,
         isModalOpened: false,
         isDrawerOpened: false,
         selectedTask: taskSchema,
+        setIsLoading:(arg:boolean)=>set({isLoading:arg}),
         setSelectedTaskFn:(task)=>set({selectedTask:task}),
         openDrawerFn:()=>set({isDrawerOpened:true}),
         closeDrawerFn:()=>set({isDrawerOpened:false}),
