@@ -3,6 +3,7 @@ import express from 'express'
 import {logger} from './utils/logger.js'
 import { errorHandler } from './middlewares/errorHandler.js'
 import { getAllTask } from './controllers/getAllTasks.js'
+import cors from 'cors'
 
 
 // config()
@@ -12,6 +13,7 @@ const PORT = process.env.SERVER_PORT
 const app = express()
 
 app.use(errorHandler)
+app.use(cors({origin:'http://localhost:5173'}))
 
 app.get('/tasks', getAllTask)
 
