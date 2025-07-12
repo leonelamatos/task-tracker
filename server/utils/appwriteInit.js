@@ -1,4 +1,4 @@
-import { Client, Databases,ID } from 'node-appwrite'
+import { Client, Databases,ID, Users} from 'node-appwrite'
 
 const client = new Client()
 
@@ -13,6 +13,7 @@ const COLLECTION_ID = process.env.APPWRITE_COLLECTION_ID
 
 
 const database = new Databases(client)
+const users = new Users(client)
 
 
-export {DATABASE_ID,COLLECTION_ID,database,ID}
+export {DATABASE_ID,COLLECTION_ID,database,ID, users}

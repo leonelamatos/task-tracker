@@ -56,8 +56,8 @@ export const updateTask = async (req, res) => {
 }
 
 export const deleteTask = async (req, res) => {
-    const { $id } = req.params
-    const [error, data] = await handleAsync(database.deleteDocument(DATABASE_ID,COLLECTION_ID,$id))
+    const id  = req.params.id
+    const [error, data] = await handleAsync(database.deleteDocument(DATABASE_ID,COLLECTION_ID,id))
     if (error) {
         logger.error(error)
         return res.status(error.code).json({
@@ -65,7 +65,7 @@ export const deleteTask = async (req, res) => {
         error: error.response
     })
      }
-    logger.info(`Task with ID ${$id} has been deleted`)
+    logger.info(`Task with ID ${id} has been deleted`)
     return res.json({
         status: "success",
         $id
@@ -73,8 +73,8 @@ export const deleteTask = async (req, res) => {
 }
 
 export const getSingleTask = async (req, res) => {
-    const { $id } = req.params
-    const[ error, data ] = await handleAsync(database.getDocument(DATABASE_ID, COLLECTION_ID, $id))
+    const id = req.params.id
+    const[ error, data ] = await handleAsync(database.getDocument(DATABASE_ID, COLLECTION_ID, id))
   if (error) {
         // logger.error(error)
         return res.status(error.code).json({
@@ -82,7 +82,7 @@ export const getSingleTask = async (req, res) => {
         error: error.response
     })
      }
-    logger.info(`Task with ID ${$id} has been returned`)
+    logger.info(`Task with ID ${id} has been returned`)
     return res.json({
         status: "success",
         data

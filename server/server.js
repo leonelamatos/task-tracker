@@ -4,6 +4,7 @@ import {logger} from './utils/logger.js'
 import { errorHandler } from './middlewares/errorHandler.js'
 import { deleteTask, getAllTask, getSingleTask, postTasks, updateTask } from './controllers/tasksControllers.js'
 import cors from 'cors'
+import { postCreateUserAccount, postLoginUser } from './controllers/authController.js'
 
 
 // config()
@@ -18,10 +19,12 @@ app.use(errorHandler)
 app.use(cors({origin:'http://localhost:5173'}))
 
 app.get('/tasks', getAllTask)
-app.get('/tasks/:$id', getSingleTask)
+app.get('/tasks/:id', getSingleTask)
 app.post('/tasks', postTasks)
-app.put('/tasks/:$id', updateTask)
+app.put('/tasks/:id', updateTask)
 app.delete('/tasks/:$id', deleteTask)
+app.post('/auth/login', postLoginUser)
+app.post('/auth/singup', postCreateUserAccount)
 
 
 app.listen(PORT, () => {

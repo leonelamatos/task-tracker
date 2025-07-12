@@ -1,5 +1,6 @@
 import type { TaskType } from '@/constants/types'
 import { handleAsync } from '@/util/handleAsync'
+import type { Models } from 'appwrite'
 import axios from 'axios'
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
@@ -21,6 +22,8 @@ type AppStore = {
     isDrawerOpened: boolean
     selectedTask: TaskType
     taskArray: TaskType[]
+    // isUserLoggedIn: boolean
+    userSession: {} | undefined
     setIsLoading:(arg:boolean)=>void
     setSelectedTaskFn:(task:TaskType)=>void
     openDrawerFn:()=>void,
@@ -37,7 +40,9 @@ export const useAppStore = create<AppStore>()(
         isModalOpened: false,
         isDrawerOpened: false,
         selectedTask: taskSchema,
-        taskArray:[],
+        taskArray: [],
+        isUserLoggedIn: false,
+        userSession:undefined,
         setIsLoading:(arg:boolean)=>set({isLoading:arg}),
         setSelectedTaskFn:(task)=>set(state=>({selectedTask:{...state.selectedTask,...task}})),
         openDrawerFn:()=>set({isDrawerOpened:true}),
