@@ -16,7 +16,7 @@ export default function AddNewTask() {
         <NewTaskForm />
       </Modal>
 
-      <Button variant="default" onClick={openCreateModal} >
+      <Button variant="default" onClick={openCreateModal} my={18} >
         <IconPlus size={15} />  Add Task
       </Button>
     </>

@@ -33,26 +33,12 @@ export default function App() {
             </Center>
           </Group>
           <Group px='md'>
-            <ActionIcon variant="filled" size="md" radius="xl" aria-label="Settings">
-              <IconPlus style={{ width: '70%', height: '70%' }} stroke={1.5} />
-
-            </ActionIcon>
-
-
-            <ActionIcon size="md" radius="xl" aria-label="User">
-              <Avatar />
-
-            </ActionIcon>
-
-
+            <Avatar variant='filled' src={null} color='blue' />
           </Group>
         </Flex>
 
       </AppShell.Header>
-
       <AppShell.Main>
-
-
         <Title>Task Management</Title>
         <AddNewTask />
         <AccordionItem />

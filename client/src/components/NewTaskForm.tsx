@@ -40,7 +40,7 @@ export default function NewTaskForm() {
 
     const handleCreateTask = async (formData: TaskSchema) => {
         setIsLoading(true)
-        const [ error, data ] = await handleAsync(axios.post('http://localhost:3000/tasks', formData, { headers: { "Content-Type": 'application/json' } }))
+        const [ error, {data} ] = await handleAsync(axios.post('http://localhost:3000/tasks', formData, { headers: { "Content-Type": 'application/json' } }))
 
         if (error) {
             setIsLoading(false)
@@ -76,7 +76,8 @@ export default function NewTaskForm() {
             message: 'Task has saved successfully.',
         });
 
-        saveTasks(data.data)
+        console.log(data)
+        saveTasks(data.task)
         closeCreateModal()
     }
 

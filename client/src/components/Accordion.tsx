@@ -1,4 +1,4 @@
-import { Accordion, Badge, LoadingOverlay, Text } from "@mantine/core";
+import { Accordion, Badge, Drawer, Input, LoadingOverlay, Modal, Text } from "@mantine/core";
 import { TasksTable } from "./TasksTable";
 import { accordionData } from "@/constants/accordionData";
 import type { TaskType } from "@/constants/types";
@@ -27,8 +27,6 @@ export default function AccordionItem() {
 
   }, [])
 
-  console.log(taskArray)
-
   const activeTasks = filterActivetasks(taskArray)
   const completedTasks = filterCompletedTasks(taskArray)
 
@@ -36,7 +34,8 @@ export default function AccordionItem() {
     <>
 
       <LoadingOverlay visible={isLoading} zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />
-      <EditTaskDrawer closeOnClick={false} />
+
+      <EditTaskDrawer />
 
       <Accordion variant="contained" multiple defaultValue={[ 'active', 'completed' ]}>
         <Accordion.Item value="active" >
@@ -45,7 +44,7 @@ export default function AccordionItem() {
           </Accordion.Control>
           <Accordion.Panel>
             {
-              !taskArray?.length ? <NoTaskFound /> : <TasksTable data={activeTasks} />
+              !activeTasks?.length ? <NoTaskFound /> : <TasksTable data={activeTasks} />
             }
 
           </Accordion.Panel>

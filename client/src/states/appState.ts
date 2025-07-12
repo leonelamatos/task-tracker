@@ -24,12 +24,11 @@ type AppStore = {
     setIsLoading:(arg:boolean)=>void
     setSelectedTaskFn:(task:TaskType)=>void
     openDrawerFn:()=>void,
-        closeDrawerFn:()=>void,
+    closeDrawerFn:()=>void,
     openCreateModalFn:()=>void
     closeCreateModalFn: () => void
     fetchTasks: (url: string) => void
-    saveTasks:(arg:TaskType)=>void
-    
+    saveTasks: (arg: TaskType) => void
 }
 
 export const useAppStore = create<AppStore>()(
@@ -40,11 +39,11 @@ export const useAppStore = create<AppStore>()(
         selectedTask: taskSchema,
         taskArray:[],
         setIsLoading:(arg:boolean)=>set({isLoading:arg}),
-        setSelectedTaskFn:(task)=>set({selectedTask:task}),
+        setSelectedTaskFn:(task)=>set(state=>({selectedTask:{...state.selectedTask,...task}})),
         openDrawerFn:()=>set({isDrawerOpened:true}),
         closeDrawerFn:()=>set({isDrawerOpened:false}),
         openCreateModalFn:()=> set({isModalOpened: true}),
-        closeCreateModalFn: () => set({ isModalOpened: false }),
+        closeCreateModalFn: () => set({ isModalOpened: false,selectedTask: undefined }),
         fetchTasks: async (url) => {
             set({isLoading: true})
             const [ error, data]  = await handleAsync(axios.get(url))
@@ -56,6 +55,7 @@ export const useAppStore = create<AppStore>()(
             set({ isLoading: false, taskArray: [...data.data ]})
             
         },
+       
         saveTasks:(taskArray:TaskType)=>{set(state=>({taskArray:[...state.taskArray, taskArray]}))}
     }), {
         name: 'app-state',

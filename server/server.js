@@ -2,7 +2,7 @@
 import express from 'express' 
 import {logger} from './utils/logger.js'
 import { errorHandler } from './middlewares/errorHandler.js'
-import { getAllTask, postTasks } from './controllers/tasksControllers.js'
+import { deleteTask, getAllTask, getSingleTask, postTasks, updateTask } from './controllers/tasksControllers.js'
 import cors from 'cors'
 
 
@@ -18,7 +18,10 @@ app.use(errorHandler)
 app.use(cors({origin:'http://localhost:5173'}))
 
 app.get('/tasks', getAllTask)
+app.get('/tasks/:$id', getSingleTask)
 app.post('/tasks', postTasks)
+app.put('/tasks/:$id', updateTask)
+app.delete('/tasks/:$id', deleteTask)
 
 
 app.listen(PORT, () => {
