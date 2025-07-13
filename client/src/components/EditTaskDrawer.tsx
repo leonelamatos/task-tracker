@@ -76,7 +76,6 @@ export default function EditTaskDrawer({ closeOnClick }: EditTaskType) {
     const notificationID = ShowCustomNotification(notificationProperties)
 
     const [ error, data ] = await handleAsync(axios.delete(`/api/tasks/${selectedTask.$id}`))
-
     if (error) {
       useAppStore.setState({ isLoading: false })
       const errorNotificationProperties = {
@@ -90,7 +89,7 @@ export default function EditTaskDrawer({ closeOnClick }: EditTaskType) {
     }
 
 
-    const removeDeletedTask = useAppStore.getState().taskArray.filter(task => task.$id != data?.data?.id)
+    const removeDeletedTask = useAppStore.getState().taskArray.filter(task => task.$id != data?.id)
 
     useAppStore.setState({ taskArray: removeDeletedTask, isDrawerOpened: false })
     const updateNotification = {
