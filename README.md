@@ -1,3 +1,7 @@
+![Screenshot of the app imagige](/resources/app_image.png)
+
+
+
 ## Intro
 ### 🚀 Application Task Tracker: A Full-Stack Solution
 
