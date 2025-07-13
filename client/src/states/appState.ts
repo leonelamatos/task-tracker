@@ -28,7 +28,7 @@ type AppStore = {
     signup:boolean
     setIsLoading:(arg:boolean)=>void
     setSelectedTaskFn:(task:TaskType)=>void
-    openDrawerFn:(arg)=>void,
+    openDrawerFn:()=>void,
     closeDrawerFn:()=>void,
     openCreateModalFn:()=>void
     closeCreateModalFn: () => void
@@ -53,7 +53,7 @@ export const useAppStore = create<AppStore>()(
             console.log(task);
             set(state=>({ selectedTask: {...state.selectedTask, ...task} }))
         },
-        openDrawerFn: (row) => set({ isDrawerOpened: true  }),
+        openDrawerFn: () => set({ isDrawerOpened: true  }),
         closeDrawerFn: () => set({ isDrawerOpened: false }),
         openCreateModalFn: () => set({ isModalOpened: true }),
         closeCreateModalFn: () => set({ isModalOpened: false}),

@@ -8,7 +8,6 @@ import { DatePickerInput } from '@mantine/dates';
 import { IconCalendar, IconTrashFilled } from '@tabler/icons-react';
 import dayjs from 'dayjs';
 import ShowCustomNotification from './ShowNotification';
-import { useEffect, useState } from 'react';
 
 export default function EditTaskDrawer({ closeOnClick }: EditTaskType) {
   const isDrawerOpened = useAppStore(state => state.isDrawerOpened)
@@ -16,17 +15,8 @@ export default function EditTaskDrawer({ closeOnClick }: EditTaskType) {
   const selectedTask = useAppStore(state => state.selectedTask)
   const closeDrawerFn = useAppStore(state => state.closeDrawerFn)
 
-  // const getSingleTaskById = useAppStore(state => state.getSingleTaskById)
 
   const { handleSubmit, control } = useForm({ mode: 'all', values: selectedTask })
-
-  // console.log('selected Task', selectedTask)
-
-  // useEffect(() => {
-  //   setCurrentTask(selectedTask)
-
-  //   console.log('set current task', currentTask)
-  // }, [])
 
   const updateTaskHandler = async (formData: FieldValues) => {
 
@@ -115,7 +105,7 @@ export default function EditTaskDrawer({ closeOnClick }: EditTaskType) {
 
   return (
     <>
-      <Drawer id='edit' opened={isDrawerOpened} closeOnClickOutside={false} onClose={closeDrawerFn}
+      <Drawer id='edit' opened={isDrawerOpened} closeOnClickOutside={closeOnClick} onClose={closeDrawerFn}
         position='right' size='40rem' withCloseButton={false} withOverlay={false}
 
       >

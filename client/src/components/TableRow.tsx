@@ -10,7 +10,7 @@ export default function TableRow({ data }: { data: TaskType[] }) {
     return data.map((row) => (
         <Table.Tr key={row?.$id} onClick={() => {
             setSelectedTaskFn(row)
-            openDrawerFn(row)
+            openDrawerFn()
         }} styles={{ tr: { cursor: 'pointer' } }}>
             <Table.Td>{row?.taskName}</Table.Td>
             <Table.Td>{row?.description}</Table.Td>
