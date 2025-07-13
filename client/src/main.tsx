@@ -17,7 +17,7 @@ createRoot(document.getElementById('root')!).render(
   <QueryClientProvider client={queryClient}>
 
     <MantineProvider>
-      <Notifications />
+      <Notifications zIndex={5000} />
       <StrictMode>
         <App />
       </StrictMode>
