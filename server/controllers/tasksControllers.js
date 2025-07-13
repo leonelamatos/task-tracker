@@ -29,7 +29,7 @@ export const postTasks = async (req, res) => {
 }
 
 export const updateTask = async (req, res) => {
-    const { $id } = req.params
+    const { id } = req.params
     const dataToUpdate = {
         taskName: req.body.taskName,
         type: req.body.type,
@@ -40,7 +40,7 @@ export const updateTask = async (req, res) => {
         priority: req.body.priority,
         
     }
-    const [error, data] = await handleAsync(database.updateDocument(DATABASE_ID,COLLECTION_ID,$id,dataToUpdate))
+    const [error, data] = await handleAsync(database.updateDocument(DATABASE_ID,COLLECTION_ID,id,dataToUpdate))
     if (error) {
         logger.error(error.message)
         return res.status(error.code).json({
@@ -68,15 +68,15 @@ export const deleteTask = async (req, res) => {
     logger.info(`Task with ID ${id} has been deleted`)
     return res.json({
         status: "success",
-        $id
+        id
     })
 }
 
-export const getSingleTask = async (req, res) => {
+export const getTaskById = async (req, res) => {
     const id = req.params.id
     const[ error, data ] = await handleAsync(database.getDocument(DATABASE_ID, COLLECTION_ID, id))
-  if (error) {
-        // logger.error(error)
+    if (error) {
+         logger.info(`Task with ID ${id} cannot be found`)
         return res.status(error.code).json({
         status: "error",
         error: error.response
