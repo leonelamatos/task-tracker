@@ -1,13 +1,13 @@
-import { ActionIcon, Button, CheckIcon, Divider, Drawer, Flex, Group, Select, Table, Textarea, TextInput } from '@mantine/core';
+import { ActionIcon, Button, Divider, Drawer, Flex, Group, Select, Table, Textarea, TextInput } from '@mantine/core';
 import type { EditTaskType } from '@/constants/types';
-import { useAppStore } from '@/states/appState';
+import {  useAppStore } from '@/states/appState';
 import { Controller, useForm, type FieldValues } from 'react-hook-form';
-import { notifications } from '@mantine/notifications';
 import { handleAsync } from '@/util/handleAsync';
 import axios from 'axios';
 import { DatePickerInput } from '@mantine/dates';
 import { IconCalendar, IconTrashFilled } from '@tabler/icons-react';
 import dayjs from 'dayjs';
+import ShowCustomNotification from './showNotification';
 
 export default function EditTaskDrawer({ closeOnClick }: EditTaskType) {
   const isDrawerOpened = useAppStore(state => state.isDrawerOpened)
@@ -15,31 +15,34 @@ export default function EditTaskDrawer({ closeOnClick }: EditTaskType) {
   const selectedTask = useAppStore(state => state.selectedTask)
   const closeDrawerFn = useAppStore(state => state.closeDrawerFn)
 
-  const { handleSubmit, control } = useForm({})
+  const { handleSubmit, control } = useForm({ mode: 'all', defaultValues: selectedTask })
 
   const updateTaskHandler = async (formData: FieldValues) => {
 
-    setIsLoading(true)
-    const [ error, data ] = await handleAsync(axios.put(`http://localhost:3000/tasks/${formData?.$id}`, formData))
+
+    const notificationArgs = {
+      title: `Updating`,
+      message: `Updating task ${formData.taskName}.`,
+      type: 'success',
+    }
+    const id = ShowCustomNotification(notificationArgs)
+    const [ error, data ] = await handleAsync(axios.put(`/api/tasks/${formData?.$id}`, formData))
 
     if (error) {
-      notifications.show({
+      const errorArgs = {
         title: data?.data?.status,
         message: 'There was an error updating task',
-        position: 'top-center',
-        color: "red",
-        style: { background: '#f1d9d9' },
-        withCloseButton: true,
-        onClose: () => console.log('unmounted'),
-        onOpen: () => console.log('mounted'),
-        autoClose: 10000,
-      })
+
+      }
+
+      ShowCustomNotification(errorArgs)
 
       setIsLoading(false)
-      return error
+      return
     }
 
-    console.log('return Data', data)
+
+
     const findTaskIndex = useAppStore.getState().taskArray.findIndex(savedTask => savedTask.$id === data?.data.task?.$id)
     const updatedArray = useAppStore.getState().taskArray.map((savedTask, index) => {
       if (index === findTaskIndex) {
@@ -47,36 +50,58 @@ export default function EditTaskDrawer({ closeOnClick }: EditTaskType) {
       }
       return savedTask
     })
-    notifications.show({
-      id: 'success',
-      position: 'top-center',
-      color: "green",
-      style: { background: '#e8f5e9' },
-      withCloseButton: true,
-      onClose: () => console.log('unmounted'),
-      onOpen: () => console.log('mounted'),
-      autoClose: 5000,
-      icon: <CheckIcon size={18} />,
-      title: data?.data?.status,
-      message: 'Task has saved successfully.',
-    });
+
+
+    const updatedArg = {
+      type: 'update',
+      id,
+      title: 'Updated',
+      message: `Task ${formData.taskName} has been updated`,
+    }
+
+    ShowCustomNotification(updatedArg)
+
     useAppStore.setState({ isLoading: false, isDrawerOpened: false, taskArray: updatedArray, selectedTask: undefined })
 
   }
 
   const deleteTask = async () => {
-    useAppStore.setState({ isLoading: true })
-    const [ error, { data } ] = await handleAsync(axios.delete(`http://localhost:300/tasks/${selectedTask.$id}`))
+    console.log('selected task', selectedTask)
+    let notificationProperties = {
+      type: 'success',
+      title: `Deleting`,
+      message: `Deleting task ${selectedTask.taskName}`
+    }
+
+    const notificationID = ShowCustomNotification(notificationProperties)
+
+    const [ error, data ] = await handleAsync(axios.delete(`/api/tasks/${selectedTask.$id}`))
+
     if (error) {
       console.log(error)
       useAppStore.setState({ isLoading: false })
-      return error
+      const errorNotificationProperties = {
+        title: error.status,
+        message: error.message,
+        type: 'error'
+      }
+
+      ShowCustomNotification(errorNotificationProperties)
+      return
     }
 
-    useAppStore.setState({ isLoading: false })
-    const removeDeletedTask = useAppStore.getState().taskArray.filter(task => task.$id != data?.$id)
-    console.log('return Data', data)
-    useAppStore.setState({ isLoading: false, isDrawerOpened: false, taskArray: removeDeletedTask })
+
+    const removeDeletedTask = useAppStore.getState().taskArray.filter(task => task.$id != data?.data?.id)
+
+    useAppStore.setState({ taskArray: removeDeletedTask, isDrawerOpened: false })
+    const updateNotification = {
+      id: notificationID,
+
+      title: 'Completed',
+      message: `Task ${selectedTask.taskName} successfully deleted`,
+      type: 'update',
+    }
+    ShowCustomNotification(updateNotification)
   }
 
   return (
@@ -120,12 +145,12 @@ export default function EditTaskDrawer({ closeOnClick }: EditTaskType) {
               <Table.Tr>
                 <Table.Th bg='transparent'>Type</Table.Th>
                 <Table.Td>
-                  <Controller defaultValue={selectedTask?.type} name='type' control={control} render={({ field: { onChange } }) => (
+                  <Controller defaultValue={selectedTask?.type} name='type' control={control} render={({ field: { onChange, value } }) => (
                     <Select
                       variant='filled'
                       styles={{ label: { marginBottom: 10 } }}
                       data={[ 'BugFix', 'Backend', 'New Feature', 'UI/UX', 'In Progress' ]}
-                      value={selectedTask?.type}
+                      value={value}
                       onChange={onChange}
                     />
                   )} />
@@ -135,7 +160,7 @@ export default function EditTaskDrawer({ closeOnClick }: EditTaskType) {
               <Table.Tr>
                 <Table.Th bg='transparent'>Due Date</Table.Th>
                 <Table.Td>
-                  <Controller defaultValue={selectedTask?.dueDate} name='dueDate' control={control} render={({ field: { onChange } }) => (
+                  <Controller defaultValue={selectedTask?.dueDate} name='dueDate' control={control} render={({ field: { onChange, value } }) => (
                     <DatePickerInput
                       variant='filled'
                       leftSection={<IconCalendar size={18} stroke={1.5} />}
@@ -144,7 +169,7 @@ export default function EditTaskDrawer({ closeOnClick }: EditTaskType) {
                       presets={[
                         { value: dayjs().format('YYYY-MM-DD'), label: 'Today' },
                       ]}
-                      value={selectedTask?.dueDate}
+                      value={value}
                       radius="md"
                       size="md"
                       onChange={onChange} />
@@ -170,13 +195,13 @@ export default function EditTaskDrawer({ closeOnClick }: EditTaskType) {
           </Table>
 
           <Divider />
-          <Controller defaultValue={selectedTask?.description} name='description' control={control} render={({ field: { onChange } }) => (
+          <Controller defaultValue={selectedTask?.description} name='description' control={control} render={({ field: { onChange, value } }) => (
             <Textarea
               pb={40}
               h='20rem'
               rows={10}
               size="md"
-              value={selectedTask?.description}
+              value={value}
               onChange={onChange}
             />
           )} />
@@ -192,7 +217,7 @@ export default function EditTaskDrawer({ closeOnClick }: EditTaskType) {
                 { value: dayjs().format('YYYY-MM-DD'), label: 'Today' },
               ]}
               label='Scheduled Work'
-              defaultValue={selectedTask?.creationDate}
+              // defaultValue={selectedTask?.creationDate}
               value={value}
               radius="md"
               size="md"

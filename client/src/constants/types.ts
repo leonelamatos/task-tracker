@@ -14,8 +14,6 @@ export type TaskType = {
 
 export type TableProps = {
   data: TaskType[]
-  variant?: string
-  control?:any
 }
 
 export type EditTaskType = {

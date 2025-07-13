@@ -1,11 +1,10 @@
-import useAsync from "@/hooks/useAsync";
 import { useAppStore } from "@/states/appState";
 import { handleAsync } from "@/util/handleAsync";
+import ShowCustomNotification from "@/components/showNotification";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, CheckIcon, Container, Divider, Flex, Group, Select, Stack, Textarea, TextInput, Title } from "@mantine/core";
+import { Button, Container, Divider, Flex, Group, Select, Stack, Textarea, TextInput, Title } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
-import { notifications } from "@mantine/notifications";
-import { IconCalendar, IconX } from "@tabler/icons-react";
+import { IconCalendar  } from "@tabler/icons-react";
 import axios from "axios";
 import dayjs from "dayjs";
 import { useForm, Controller } from "react-hook-form";
@@ -27,8 +26,8 @@ type TaskSchema = z.infer<typeof schema>
 
 export default function NewTaskForm() {
     const closeCreateModal = useAppStore(state => state.closeCreateModalFn)
-    const setIsLoading = useAppStore(state => state.setIsLoading)
     const saveTasks = useAppStore(state => state.saveTasks)
+    const saveToStore = useAppStore(state => state.saveToStore)
 
     const { handleSubmit, formState: { errors }, control } = useForm({
         mode: 'onBlur',
@@ -36,48 +35,52 @@ export default function NewTaskForm() {
     })
 
 
-
-
     const handleCreateTask = async (formData: TaskSchema) => {
-        setIsLoading(true)
-        const [ error, {data} ] = await handleAsync(axios.post('http://localhost:3000/tasks', formData, { headers: { "Content-Type": 'application/json' } }))
+        // setIsLoading(true)
+        const notificationArgs = {
+            type: 'success',
+            title: `Saving task ${formData.taskName}`,
+            message: 'Done',
+            loading: true,
+            autoClose: false,
+            withCloseButton: false,
+        }
+        const id = ShowCustomNotification(notificationArgs)
+
+        const [ error, data ] = await handleAsync(axios.post('/api/tasks', formData, { headers: { "Content-Type": 'application/json' } }))
+
+        console.log('return data', data.data.task)
 
         if (error) {
-            setIsLoading(false)
-            notifications.show({
-                id: 'error',
-                position: 'top-center',
-                color: "red",
-                style: { background: '#f1d9d9' },
-                withCloseButton: true,
-                onClose: () => console.log('unmounted'),
-                onOpen: () => console.log('mounted'),
-                autoClose: 5000,
-                icon: <IconX size={18} />,
-                title: data.status,
-                message: 'There was an issue saving task.',
-            });
+            // setIsLoading(false)
+            console.log(error)
+            const notificationArgs = {
+                title: error.message,
+                type: 'error',
+                message: ' There was an error connecting to the server',
+                // saveToStore: { isLoading: false }
+            }
+            ShowCustomNotification(notificationArgs)
             return
-
         }
-        setIsLoading(false)
 
-        notifications.show({
-            id: 'success',
-            position: 'top-center',
-            color: "green",
-            style: { background: '#e8f5e9' },
-            withCloseButton: true,
-            onClose: () => console.log('unmounted'),
-            onOpen: () => console.log('mounted'),
-            autoClose: 5000,
-            icon: <CheckIcon size={18} />,
-            title: data.status,
-            message: 'Task has saved successfully.',
-        });
+        setTimeout(() => {
+            const updateNotification = {
+                id,
+                type: 'update',
+                title: 'Task Saved',
+                message: `Task ${formData.taskName} saved successfully`,
+                loading: false,
+                autoClose: 2000,
+                // saveToStore: { tasksArray: data.data.task }
+                // callback: () => saveToStore('isLoading', false)
+            }
+            ShowCustomNotification(updateNotification)
+
+        }, 1000);
 
         console.log(data)
-        saveTasks(data.task)
+        saveTasks(data.data.task)
         closeCreateModal()
     }
 

@@ -8,8 +8,6 @@ import TableRow from './TableRow';
 export function TasksTable({ data }: TableProps) {
   const [ scrolled, setScrolled ] = useState(false);
 
-
-
   return (
     <ScrollArea h='100%' onScrollPositionChange={({ y }) => setScrolled(y !== 0)}>
       <Table miw={700} highlightOnHover>

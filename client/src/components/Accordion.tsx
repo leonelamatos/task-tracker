@@ -1,20 +1,14 @@
-import { Accordion, Badge, Drawer, Input, LoadingOverlay, Modal, Text } from "@mantine/core";
+import { Accordion,  LoadingOverlay } from "@mantine/core";
 import { TasksTable } from "./TasksTable";
-import { accordionData } from "@/constants/accordionData";
 import type { TaskType } from "@/constants/types";
-import useFetch from "@/hooks/useFetchTask";
-import NoDataFound from "./NoTaskFound";
 import TaskCount from "./TaskCount";
 import NoTaskFound from "./NoTaskFound";
 import { useAppStore } from "@/states/appState";
 import EditTaskDrawer from "./EditTaskDrawer";
 import { useEffect } from "react";
 
-
-const filterActivetasks = (data: TaskType[]) => data?.filter(task => task?.status?.toLowerCase() !== 'completed')
-const filterCompletedTasks = (data: TaskType[]) => data?.filter(task => task?.status?.toLowerCase() === 'completed')
-
-
+export const filterActivetasks = (data: TaskType[]) => data?.filter(task => task?.status?.toLowerCase() !== 'completed')
+export const filterCompletedTasks = (data: TaskType[]) => data?.filter(task => task?.status?.toLowerCase() === 'completed')
 
 export default function AccordionItem() {
 
@@ -23,7 +17,7 @@ export default function AccordionItem() {
   const taskArray = useAppStore(state => state.taskArray)
 
   useEffect(() => {
-    fetchTasks('http://localhost:3000/tasks')
+    fetchTasks('/api/tasks')
 
   }, [])
 
