@@ -65,3 +65,7 @@ Access the frontend via the url
 ```
 http://localhost:3000
 ```
+## Demo
+Online demo of the app 
+
+[task-traker-app](https://apps.leonelmatos.com)
