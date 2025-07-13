@@ -8,7 +8,7 @@ import { useAppStore } from './states/appState';
 import { IconLogout } from '@tabler/icons-react';
 import { account } from './util/appwriteConfig';
 import { SignupPage } from './components/SignupPage';
-import ShowCustomNotification from './components/showNotification';
+import ShowCustomNotification from './components/ShowNotification';
 
 export default function App() {
   const [ opened, { toggle } ] = useDisclosure();

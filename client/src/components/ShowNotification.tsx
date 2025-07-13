@@ -31,12 +31,12 @@ export default function ShowCustomNotification(props: Props): string | undefined
             },
             ...props
         })
-        : (notifications.show({
+        :  (notifications.show({
             position: 'top-center',
             color: '#ffffff',
             style: { backgroundColor: '#fa5252', color: '#fff', },
             styles: { title: { color: '#fff' }, description: { color: '#fff' }, root: { zIndex: 2000 } },
-            autoClose: 3000,
+            autoClose: 5000,
             onClose: () => {
                 saveToStore && saveToStore(props?.saveToStore),
                     props.callback && props.callback()

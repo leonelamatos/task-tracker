@@ -1,13 +1,14 @@
 import { ActionIcon, Button, Divider, Drawer, Flex, Group, Select, Table, Textarea, TextInput } from '@mantine/core';
 import type { EditTaskType } from '@/constants/types';
-import {  useAppStore } from '@/states/appState';
+import { useAppStore } from '@/states/appState';
 import { Controller, useForm, type FieldValues } from 'react-hook-form';
 import { handleAsync } from '@/util/handleAsync';
 import axios from 'axios';
 import { DatePickerInput } from '@mantine/dates';
 import { IconCalendar, IconTrashFilled } from '@tabler/icons-react';
 import dayjs from 'dayjs';
-import ShowCustomNotification from './showNotification';
+import ShowCustomNotification from './ShowNotification';
+import { useEffect, useState } from 'react';
 
 export default function EditTaskDrawer({ closeOnClick }: EditTaskType) {
   const isDrawerOpened = useAppStore(state => state.isDrawerOpened)
@@ -15,7 +16,17 @@ export default function EditTaskDrawer({ closeOnClick }: EditTaskType) {
   const selectedTask = useAppStore(state => state.selectedTask)
   const closeDrawerFn = useAppStore(state => state.closeDrawerFn)
 
-  const { handleSubmit, control } = useForm({ mode: 'all', defaultValues: selectedTask })
+  // const getSingleTaskById = useAppStore(state => state.getSingleTaskById)
+
+  const { handleSubmit, control } = useForm({ mode: 'all', values: selectedTask })
+
+  // console.log('selected Task', selectedTask)
+
+  // useEffect(() => {
+  //   setCurrentTask(selectedTask)
+
+  //   console.log('set current task', currentTask)
+  // }, [])
 
   const updateTaskHandler = async (formData: FieldValues) => {
 
@@ -27,10 +38,10 @@ export default function EditTaskDrawer({ closeOnClick }: EditTaskType) {
     }
     const id = ShowCustomNotification(notificationArgs)
     const [ error, data ] = await handleAsync(axios.put(`/api/tasks/${formData?.$id}`, formData))
-
+    console.log(data)
     if (error) {
       const errorArgs = {
-        title: data?.data?.status,
+        title: data?.status,
         message: 'There was an error updating task',
 
       }
@@ -43,10 +54,10 @@ export default function EditTaskDrawer({ closeOnClick }: EditTaskType) {
 
 
 
-    const findTaskIndex = useAppStore.getState().taskArray.findIndex(savedTask => savedTask.$id === data?.data.task?.$id)
+    const findTaskIndex = useAppStore.getState().taskArray.findIndex(savedTask => savedTask.$id === data?.task?.$id)
     const updatedArray = useAppStore.getState().taskArray.map((savedTask, index) => {
       if (index === findTaskIndex) {
-        return { ...savedTask, ...data?.data.task }
+        return { ...savedTask, ...data?.task }
       }
       return savedTask
     })
@@ -66,7 +77,6 @@ export default function EditTaskDrawer({ closeOnClick }: EditTaskType) {
   }
 
   const deleteTask = async () => {
-    console.log('selected task', selectedTask)
     let notificationProperties = {
       type: 'success',
       title: `Deleting`,
@@ -78,7 +88,6 @@ export default function EditTaskDrawer({ closeOnClick }: EditTaskType) {
     const [ error, data ] = await handleAsync(axios.delete(`/api/tasks/${selectedTask.$id}`))
 
     if (error) {
-      console.log(error)
       useAppStore.setState({ isLoading: false })
       const errorNotificationProperties = {
         title: error.status,
@@ -106,14 +115,13 @@ export default function EditTaskDrawer({ closeOnClick }: EditTaskType) {
 
   return (
     <>
-      <Drawer id='edit' opened={isDrawerOpened} closeOnClickOutside={closeOnClick} onClose={closeDrawerFn}
-        position='right' size='40rem' withCloseButton={false}
+      <Drawer id='edit' opened={isDrawerOpened} closeOnClickOutside={false} onClose={closeDrawerFn}
+        position='right' size='40rem' withCloseButton={false} withOverlay={false}
 
       >
         <form onSubmit={handleSubmit(updateTaskHandler)} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <Controller name='taskName' control={control} render={({ field }) => (
             <TextInput
-              placeholder={field.value}
               variant='transparent'
               styles={{ label: { marginBottom: 10 } }}
               value={field.value}
@@ -129,7 +137,7 @@ export default function EditTaskDrawer({ closeOnClick }: EditTaskType) {
               <Table.Tr >
                 <Table.Th bg='transparent' w='10rem'>Status</Table.Th>
                 <Table.Td>
-                  <Controller defaultValue={selectedTask?.status} name='status' control={control} render={({ field: { onChange, value, name } }) => {
+                  <Controller name='status' control={control} render={({ field: { onChange, value } }) => {
                     return <Select
                       variant='filled'
                       styles={{ label: { marginBottom: 10 } }
@@ -145,7 +153,7 @@ export default function EditTaskDrawer({ closeOnClick }: EditTaskType) {
               <Table.Tr>
                 <Table.Th bg='transparent'>Type</Table.Th>
                 <Table.Td>
-                  <Controller defaultValue={selectedTask?.type} name='type' control={control} render={({ field: { onChange, value } }) => (
+                  <Controller name='type' control={control} render={({ field: { onChange, value } }) => (
                     <Select
                       variant='filled'
                       styles={{ label: { marginBottom: 10 } }}
@@ -160,7 +168,7 @@ export default function EditTaskDrawer({ closeOnClick }: EditTaskType) {
               <Table.Tr>
                 <Table.Th bg='transparent'>Due Date</Table.Th>
                 <Table.Td>
-                  <Controller defaultValue={selectedTask?.dueDate} name='dueDate' control={control} render={({ field: { onChange, value } }) => (
+                  <Controller name='dueDate' control={control} render={({ field: { onChange, value } }) => (
                     <DatePickerInput
                       variant='filled'
                       leftSection={<IconCalendar size={18} stroke={1.5} />}
@@ -179,7 +187,7 @@ export default function EditTaskDrawer({ closeOnClick }: EditTaskType) {
               <Table.Tr>
                 <Table.Th bg='transparent'>Priority</Table.Th>
                 <Table.Td>
-                  <Controller defaultValue={selectedTask?.priority} name='priority' control={control} render={({ field: { onChange, value } }) => (
+                  <Controller name='priority' control={control} render={({ field: { onChange, value } }) => (
                     <Select
                       variant='filled'
                       styles={{ label: { marginBottom: 10 } }}
@@ -195,7 +203,7 @@ export default function EditTaskDrawer({ closeOnClick }: EditTaskType) {
           </Table>
 
           <Divider />
-          <Controller defaultValue={selectedTask?.description} name='description' control={control} render={({ field: { onChange, value } }) => (
+          <Controller name='description' control={control} render={({ field: { onChange, value } }) => (
             <Textarea
               pb={40}
               h='20rem'
@@ -207,7 +215,7 @@ export default function EditTaskDrawer({ closeOnClick }: EditTaskType) {
           )} />
           <Divider />
 
-          <Controller defaultValue={selectedTask?.creationDate} name='creationDate' control={control} render={({ field: { onChange, value } }) => (
+          <Controller name='creationDate' control={control} render={({ field: { onChange, value } }) => (
             <DatePickerInput
               variant='filled'
               leftSection={<IconCalendar size={18} stroke={1.5} />}
@@ -217,7 +225,6 @@ export default function EditTaskDrawer({ closeOnClick }: EditTaskType) {
                 { value: dayjs().format('YYYY-MM-DD'), label: 'Today' },
               ]}
               label='Scheduled Work'
-              // defaultValue={selectedTask?.creationDate}
               value={value}
               radius="md"
               size="md"

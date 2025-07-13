@@ -1,10 +1,10 @@
 import { useAppStore } from "@/states/appState";
 import { handleAsync } from "@/util/handleAsync";
-import ShowCustomNotification from "@/components/showNotification";
+import ShowCustomNotification from "@/components/ShowNotification";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Container, Divider, Flex, Group, Select, Stack, Textarea, TextInput, Title } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
-import { IconCalendar  } from "@tabler/icons-react";
+import { IconCalendar } from "@tabler/icons-react";
 import axios from "axios";
 import dayjs from "dayjs";
 import { useForm, Controller } from "react-hook-form";
@@ -27,7 +27,6 @@ type TaskSchema = z.infer<typeof schema>
 export default function NewTaskForm() {
     const closeCreateModal = useAppStore(state => state.closeCreateModalFn)
     const saveTasks = useAppStore(state => state.saveTasks)
-    const saveToStore = useAppStore(state => state.saveToStore)
 
     const { handleSubmit, formState: { errors }, control } = useForm({
         mode: 'onBlur',
@@ -36,7 +35,6 @@ export default function NewTaskForm() {
 
 
     const handleCreateTask = async (formData: TaskSchema) => {
-        // setIsLoading(true)
         const notificationArgs = {
             type: 'success',
             title: `Saving task ${formData.taskName}`,
@@ -49,16 +47,11 @@ export default function NewTaskForm() {
 
         const [ error, data ] = await handleAsync(axios.post('/api/tasks', formData, { headers: { "Content-Type": 'application/json' } }))
 
-        console.log('return data', data.data.task)
-
         if (error) {
-            // setIsLoading(false)
-            console.log(error)
             const notificationArgs = {
                 title: error.message,
                 type: 'error',
                 message: ' There was an error connecting to the server',
-                // saveToStore: { isLoading: false }
             }
             ShowCustomNotification(notificationArgs)
             return
@@ -72,15 +65,12 @@ export default function NewTaskForm() {
                 message: `Task ${formData.taskName} saved successfully`,
                 loading: false,
                 autoClose: 2000,
-                // saveToStore: { tasksArray: data.data.task }
-                // callback: () => saveToStore('isLoading', false)
             }
             ShowCustomNotification(updateNotification)
 
         }, 1000);
 
-        console.log(data)
-        saveTasks(data.data.task)
+        saveTasks(data.task)
         closeCreateModal()
     }
 

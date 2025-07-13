@@ -69,7 +69,7 @@ export default function AuthenticationForm({ control, formInput, name, formActio
                 )}
                 {isLoginForm ? <Group justify="space-between" mt="lg">
                     <Controller name='rememberMe' control={control} render={({ field }) => {
-                        return <Checkbox label="Remember me" />
+                        return <Checkbox label="Remember me" value={field.value} />
                     }}
                     />
                     {/* <Anchor component="button" size="sm">

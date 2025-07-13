@@ -10,7 +10,7 @@ export default defineConfig(({ mode }) => {
 
  return {
   plugins: [ react(), tsconfigPaths(), ],
-  base: '/track-tracker',
+  base: '/',
   server: {
     cors: { origin: 'http://localhost:3000' },
    

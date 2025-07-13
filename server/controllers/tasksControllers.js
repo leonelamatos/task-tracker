@@ -85,5 +85,5 @@ export const getTaskById = async (req, res) => {
     logger.info(`Task with ID ${id} has been returned`)
     return res.json({
         status: "success",
-        data
+        task: data
     })}

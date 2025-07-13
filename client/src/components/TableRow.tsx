@@ -8,7 +8,10 @@ export default function TableRow({ data }: { data: TaskType[] }) {
     const openDrawerFn = useAppStore(state => state.openDrawerFn)
     const setSelectedTaskFn = useAppStore(state => state.setSelectedTaskFn)
     return data.map((row) => (
-        <Table.Tr key={row?.$id} onClick={() => { openDrawerFn(); setSelectedTaskFn(row) }} styles={{ tr: { cursor: 'pointer' } }}>
+        <Table.Tr key={row?.$id} onClick={() => {
+            setSelectedTaskFn(row)
+            openDrawerFn(row)
+        }} styles={{ tr: { cursor: 'pointer' } }}>
             <Table.Td>{row?.taskName}</Table.Td>
             <Table.Td>{row?.description}</Table.Td>
 

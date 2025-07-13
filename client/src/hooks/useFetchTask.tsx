@@ -1,4 +1,3 @@
-import axios from 'axios'
 import useAsync from "./useAsync"
 
 const DEFAULT_OPTIONS = {

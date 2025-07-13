@@ -1,5 +1,4 @@
-import { useDisclosure } from '@mantine/hooks';
-import { Modal, Button, Title, Text } from '@mantine/core';
+import { Modal, Button, } from '@mantine/core';
 import NewTaskForm from './NewTaskForm';
 import { IconPlus } from '@tabler/icons-react';
 import { useAppStore } from '@/states/appState';

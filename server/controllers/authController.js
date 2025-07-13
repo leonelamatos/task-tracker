@@ -20,22 +20,3 @@ export const postCreateUserAccount = async (req, res) => {
     return res.json(data)
     
 }
-
-// export const postLoginUser = async (req, res) => {
-//     const { email, password , userName} = req.body
-    
-//     const [ error, data ] = await handleAsync(users.(email,password))
-    
-//     console.log(data)
-
-//     if (error) {
-//         logger.error('Error creating user session ' + error.message)
-//         return res.status(error.code).json(error)
-        
-//     }
-
-//     logger.info('User sesion created')
-
-//     return res.json(data)
-    
-// }

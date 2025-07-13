@@ -28,7 +28,7 @@ type AppStore = {
     signup:boolean
     setIsLoading:(arg:boolean)=>void
     setSelectedTaskFn:(task:TaskType)=>void
-    openDrawerFn:()=>void,
+    openDrawerFn:(arg)=>void,
     closeDrawerFn:()=>void,
     openCreateModalFn:()=>void
     closeCreateModalFn: () => void
@@ -49,21 +49,32 @@ export const useAppStore = create<AppStore>()(
         signup: false,
         userAccount: undefined,
         setIsLoading: (arg: boolean) => set({ isLoading: arg }),
-        setSelectedTaskFn: (task) => set(state => ({ selectedTask: { ...state.selectedTask, ...task } })),
-        openDrawerFn: () => set({ isDrawerOpened: true }),
+        setSelectedTaskFn: (task) => {
+            console.log(task);
+            set(state=>({ selectedTask: {...state.selectedTask, ...task} }))
+        },
+        openDrawerFn: (row) => set({ isDrawerOpened: true  }),
         closeDrawerFn: () => set({ isDrawerOpened: false }),
         openCreateModalFn: () => set({ isModalOpened: true }),
-        closeCreateModalFn: () => set({ isModalOpened: false, selectedTask: undefined }),
+        closeCreateModalFn: () => set({ isModalOpened: false}),
         fetchTasks: async (url) => {
             set({ isLoading: true })
             const [ error, data ] = await handleAsync(axios.get(url))
             if (error) {
-                console.log(error)
                 set({ isLoading: false })
                 return error
             }
-            set({ isLoading: false, taskArray: [ ...data.data ] })
+            set({ isLoading: false, taskArray: [ ...data ] })
             
+        },
+        getSingleTaskById: async(id:string) => {
+            const [ error, data ] = await handleAsync(axios.get(`/api/taks/${id}`))
+            if (error) {
+                console.log(error)
+                return
+            }
+            // set({selectedTask:data?.data?.task})
+            return data?.task
         },
        
         saveTasks: (taskArray: TaskType) => { set(state => ({ taskArray: [ ...state.taskArray, taskArray ] })) },
@@ -82,8 +93,6 @@ export const saveToStore = (args:Record<any,any>) => {
 export const removeTaskForStore = (id: string) => {
 const tasksTempArr = useAppStore.getState().taskArray
     const filteredArray = tasksTempArr.filter(task => task.$id !== id)
-console.log(filteredArray)
-    useAppStore.setState(state => ({ taskArray: filteredArray, isDrawerOpened: false }))
+    useAppStore.setState({ taskArray: filteredArray, isDrawerOpened: false })
     
-    console.log('ARRAY UPDATED',useAppStore.getState().taskArray)
 }

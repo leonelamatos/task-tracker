@@ -2,10 +2,9 @@ import { useForm } from 'react-hook-form';
 import AuthenticationForm, { type FormDataType, type InputType } from './AuthenticationForm';
 import { account } from '@/util/appwriteConfig';
 import { ID } from 'appwrite';
-import { notifications } from '@mantine/notifications';
 import { useAppStore } from '@/states/appState';
+import ShowCustomNotification from './ShowNotification';
 
-// const schema = z.object({ userName: z.string().min(5), userEmail: z.email(), password: z.string().min(8) })
 
 const formData: InputType[] = [ {
     key: 1,
@@ -37,50 +36,56 @@ const formData: InputType[] = [ {
     componentType: 'PasswordInput'
 } ]
 
-
 export function SignupPage() {
-    const saveToStore = useAppStore(state => state.saveToStore)
-    const userAccount = useAppStore(state => state.userAccount)
 
-    console.log(userAccount)
+    const { handleSubmit, control, } = useForm({ mode: 'all', defaultValues: { userEmail: '', password: '' } })
 
-    const { handleSubmit, control } = useForm({ mode: 'all', defaultValues: { userEmail: '', password: '' } })
+
     const handleSignup = async (formData: FormDataType) => {
 
-        try {
+        // const id = 'createId'
 
-            const result = await account.create(ID.unique(), formData.userEmail, formData.password, formData.userName)
-            notifications.show({
-                title: 'Login Successfully',
-                message: 'Redirecting to homepage',
-                position: 'top-center',
-                // color: '#0b3e19',
-                // style: {
-                //     backgroundColor: '#23c552', color: '#0b3e19'
-                // },
-                // styles: { title: { color: '#0b3e19' }, description: { color: '#0b3e19' } },
-                autoClose: 3000,
-                loading: true,
-                onClose: () => { useAppStore.setState({ signup: false }) }
-            })
+        // const args = {
+        //     type: 'success',
+        //     title: 'Creating Account',
+        //     message: 'Please wait...',
+        //     autoClose: false,
+        //     loading: true,
+        // }
+        // const notificationId = ShowCustomNotification(args)
+        account.create(ID.unique(), formData.userEmail, formData.password, formData.userName).then(result => {
 
-            saveToStore('userAccount', result)
+            setTimeout(() => {
+                const args = {
+                    // id: notificationId,
+                    type: 'success',
+                    title: 'Account created',
+                    message: 'Account created successfully',
+                    autoClose: 3000,
+                    loading: false,
+                    callback: () => useAppStore.setState({ signup: false, userAccount: result })
+                }
+                ShowCustomNotification(args)
 
-        } catch (error:any) {
+            }, 1000)
 
-            console.log('ERROR', error)
-            notifications.show({
+        }).catch(error => {
+
+            const args = {
+                // id: notificationId,
                 title: 'Login failed',
                 message: error?.message,
-                position: 'top-center',
-                color: '#ffffff',
-                style: { backgroundColor: '#fa5252', color: '#fff' },
-                styles: { title: { color: '#fff' }, description: { color: '#fff' } },
-                autoClose: 8000,
+                autoClose: 3000,
 
-            })
+            }
 
-        }
+            ShowCustomNotification(args)
+        })
+
+
+
+
+
 
     }
 
