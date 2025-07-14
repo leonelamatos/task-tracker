@@ -10,9 +10,13 @@ export default defineConfig(({ mode }) => {
 
  return {
   plugins: [ react(), tsconfigPaths(), ],
-  base: '/',
+   base: '/',
+
   server: {
-    cors: { origin: 'http://localhost:3000' },
+    origin: '0.0.0.0:8080',
+    port:8080,
+    host: true,
+    
    
     proxy: {
       "/api/": {
@@ -22,5 +26,6 @@ export default defineConfig(({ mode }) => {
       }
     }
   },
-   build:{manifest: true},}
+   build: { manifest: true, },
+}
 })
